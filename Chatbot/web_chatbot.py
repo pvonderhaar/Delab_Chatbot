@@ -17,8 +17,9 @@ def ask():
     # Get user input
     user_input = request.form["user_input"]
 
+    context = get_context()
     # Generate answer
-    answer = generate_answer(user_input)
+    answer = generate_answer(context, user_input)
 
     return answer
 
