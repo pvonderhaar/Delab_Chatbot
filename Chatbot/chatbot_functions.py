@@ -14,10 +14,10 @@ def get_context(conv_df=None):
     # TODO: Get 3-5 posts from a conversation in Dataset to answer to (Pauline)
     if conv_df is None:
         conv_df = pd.read_csv("../data/sample_data.csv")
-        conv_df['checked']= False
+        conv_df['checked'] = False
     index_list = conv_df.index.tolist()
     rndm = random.choice(index_list)
-    context_row = conv_df[~conv_df['checked']].sample(n=1)
+    context_row = conv_df.iloc[rndm].to_frame().T
     conv_id = context_row['conv_id'].iloc[0]
     conv_path = context_row['conv_path'].iloc[0]
     conv_seqid = context_row['conv_seqid'].iloc[0]
@@ -34,8 +34,11 @@ def get_context(conv_df=None):
             # der Einfachkeit halber den context ab dem ersten post
             context_sequence = context_sequence.head(5)
 
-    context_string = ""
-    for row in context_sequence.iterrows():
-        context_string += str(row['author_id'] + ":" + row['text'] + "<br>")
+    context_string = "<br>"
+    for index, row in context_sequence.iterrows():
+        typ = type(row)
+        author_id = row['author_id']
+        text = row['text']
+        context_string += f"{author_id} : {text} <br>"
 
     return context_string

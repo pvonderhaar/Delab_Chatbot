@@ -92,7 +92,7 @@
 </head>
 <body>
     <h1>The Delab Chatbot</h1>
-    <p>Context: {{ context }}</p>
+    <p>Context: {{ context |safe}}</p>
 
     <form action="/ask" method="post">
         <label for="user_input">Your answer:</label>
