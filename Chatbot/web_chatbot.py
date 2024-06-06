@@ -1,23 +1,24 @@
 from chatbot_functions import generate_answer, get_context
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 
 app = Flask(__name__)
+app.secret_key = 'delab_goe' #This is not a sensitive webapp (yet), so the key is just displayed
 
 # TODO: maybe add a db in the backend for a more elegant solution
 @app.route("/")
 def index():
-    context = get_context()
-    return render_template("chat_temp.html", context=context)
+    session['context'] = get_context()
+    return render_template("chat_temp.html", context=session["context"])
 
 
 @app.route("/ask", methods=["POST"])
 def ask():
     user_input = request.form["user_input"]
 
-    context = get_context()
+    context = session['context']
 
-    answer = generate_answer(context, user_input)
+    answer = generate_answer(user_input, context)
 
     return answer
 
