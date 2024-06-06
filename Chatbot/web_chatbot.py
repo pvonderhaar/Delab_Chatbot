@@ -2,6 +2,9 @@ from chatbot_functions import generate_answer, get_context
 
 from flask import Flask, render_template, request, session
 
+#TODO: cerate a better backend (dajngo?)
+
+
 app = Flask(__name__)
 app.secret_key = 'delab_goe' #This is not a sensitive webapp (yet), so the key is just displayed
 
