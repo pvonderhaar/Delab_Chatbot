@@ -4,7 +4,7 @@ from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-
+# TODO: maybe add a db in the backend for a more elegant solution
 @app.route("/")
 def index():
     context = get_context()
