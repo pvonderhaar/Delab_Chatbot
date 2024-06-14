@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delab Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h1 {
+            background-color: #71a4a6;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            width: 150%;
+            box-sizing: border-box;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: left;
+        }
+
+        p {
+            margin: 20px;
+            padding: 20px;
+            background-color: #e7e7e7;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 800px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            width: 80%;
+            max-width: 800px;
+        }
+
+        label {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #71a4a6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #496a6b;
+        }
+
+        #answer {
+            margin: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 800px;
+        }
+    </style>
+</head>
+<body>
+    <h1>The Delab Chatbot</h1>
+    <div class="container">
+        <p>
+            {% for author, text in context_items %}
+                <strong>{{ author }}:</strong> {{ text }} <br><br>
+            {% endfor %}
+        </p>
+    </div>
+
+    <form id="chatForm">
+        {% csrf_token %}
+        <label for="user_input">Your answer:</label>
+        <input type="text" id="user_input" name="user_input">
+        <button type="submit">Post</button>
+    </form>
+
+    <div id="answer"></div>
+
+    <script>
+        // JavaScript to handle form submission and display answer
+        const form = document.getElementById('chatForm');
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const userInput = document.getElementById('user_input').value;
+            const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+            const response = await fetch("{% url 'ask' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrfToken
+                },
+                body: `user_input=${encodeURIComponent(userInput)}`
+            });
+
+            const data = await response.json();
+            document.getElementById('answer').innerHTML = data.answer;
+        });
+    </script>
+</body>
+</html>

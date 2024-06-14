@@ -1,8 +1,5 @@
 import random
 import re
-from flask import Flask, render_template_string, send_file
-from PIL import Image, ImageDraw
-import io
 import pandas as pd
 
 
