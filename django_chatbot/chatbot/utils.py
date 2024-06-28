@@ -12,7 +12,6 @@ def generate_answer(user_input, context=None):
 
 
 def get_context(conv_df=None):
-    # TODO: Get 3-5 posts from a conversation in Dataset to answer to (Pauline)
     if conv_df is None:
         conv_df = pd.read_pickle("../data/conv_delab.pickle")
         conv_df['checked'] = False
