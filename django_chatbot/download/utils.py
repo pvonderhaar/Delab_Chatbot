@@ -1,7 +1,10 @@
-import delab_trees
-from connection_util import get_praw
-from connection_util import create_mastodon
-from socialmedia import download_conversations, PLATFORM, LANGUAGE, download_daily_sample_conversations
+import sys
+import os
+from delab_trees import TreeManager
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..' ,'delab-socialmedia')))
+
+from connection_util import get_praw, create_mastodon
+from socialmedia import PLATFORM, LANGUAGE, download_conversations, download_daily_sample_conversations
 
 
 def download(user_input):
@@ -13,10 +16,13 @@ def download(user_input):
 
 def download_mastodon():
     # TODO: Mastodon App erstellen
-    mastodon = create_mastodon(
-        use_yaml=True,
-        yaml_path='path/to/your/social_media_credentials.yml'
-    )
+    relative_path = '../../secret/mastodon_secret.yaml'
+
+    # Der absolute Pfad relativ zum aktuellen Skript
+    absolute_path = os.path.abspath(os.path.join(os.path.dirname(__file__), relative_path))
+
+    mastodon = create_mastodon()
+
     conversations = download_daily_sample_conversations(platform=PLATFORM.MASTODON,
                                                         language=LANGUAGE.ENGLISH,
                                                         min_results=5,
@@ -42,4 +48,5 @@ def download_reddit():
 
 def trees_to_file(conversations):
     # TODO: nochmal delab_trees anschauen und schauen was kommt
+    print("Downloaded conversations!")
     return False

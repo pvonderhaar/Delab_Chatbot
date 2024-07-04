@@ -69,7 +69,22 @@
         function download() {
             var platform = document.getElementById("platform").value;
             alert("Download initiated for: " + platform);
-            // Add your download logic here
+
+            fetch("{% url 'ask_view' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({ user_input: platform })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert("Download complete: " + data.answer);
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+            });
         }
     </script>
 </body>
