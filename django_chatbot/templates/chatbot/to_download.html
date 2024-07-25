@@ -86,52 +86,18 @@
             width: 80%;
             max-width: 800px;
         }
+        <style>
+        .spaced-button {
+            margin-top: 50px; /* Hier wird der Abstand festgelegt */
+        }
     </style>
 </head>
 <body>
     <h1>The Delab Chatbot</h1>
     <div class="container">
-        <p>
-            {% for author, text in context_items %}
-                <strong>{{ author }}:</strong> {{ text }} <br><br>
-            {% endfor %}
-        </p>
-    </div>
-
-    <form id="chatForm">
-        {% csrf_token %}
-        <label for="user_input">Your answer:</label>
-        <input type="text" id="user_input" name="user_input">
-        <button type="submit">Post</button>
-    </form>
-
-    <div id="answer"></div>
-    <div class="container">
-        <br>Neuen Datensatz herunterladen <br>
+        <br>Es wurde nichts runtergeladen. Gehe zum download, um Daten herunterzuladen <br>
         <br><br>
-        <button onclick="window.location.href='http://127.0.0.1:8000/download'">Download</button>
+        <button class="spaced-button" onclick="window.location.href='http://127.0.0.1:8000/download'">Download</button>
     </div>
-    <script>
-        // JavaScript to handle form submission and display answer
-        const form = document.getElementById('chatForm');
-        form.addEventListener('submit', async function(event) {
-            event.preventDefault();
-
-            const userInput = document.getElementById('user_input').value;
-            const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
-
-            const response = await fetch("{% url 'ask' %}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRFToken': csrfToken
-                },
-                body: `user_input=${encodeURIComponent(userInput)}`
-            });
-
-            const data = await response.json();
-            document.getElementById('answer').innerHTML = data.answer;
-        });
-    </script>
 </body>
 </html>
