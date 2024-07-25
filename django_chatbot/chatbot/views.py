@@ -10,6 +10,8 @@ from .utils import generate_answer, get_context
 def index_view(request):
     request.session['context'] = get_context()
     context = request.session['context']
+    if isinstance(context, str):
+        return render(request, 'chatbot/to_download.html')
     return render(request, 'chatbot/chat_temp.html', {'context_items': context.items()})
 
 

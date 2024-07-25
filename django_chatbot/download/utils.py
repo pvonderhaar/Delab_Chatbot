@@ -1,7 +1,6 @@
 import sys
 import os
 from delab_trees import TreeManager
-from delab_trees.delab_post import DelabPost
 from delab_trees.delab_tree import DelabTree
 from delab_trees.util import get_root
 import networkx as nx
@@ -40,7 +39,7 @@ def download_reddit():
     # TODO: Julians Zugangsdaten finden/ nachfragen
     reddit = get_praw(
         use_yaml=True,
-        yaml_path='../../secret/reddit_secret.yaml'
+        yaml_path='../secret/reddit_secret.yaml'
     )
     conversations = download_conversations(query_string="Politics",
                                            platform=PLATFORM.REDDIT,
@@ -53,8 +52,12 @@ def download_reddit():
 
 def trees_to_file(conversations):
     # TODO: nochmal delab_trees anschauen und schauen was kommt
+    print(type(conversations[0]))
+
     posts_dict = {"post_id": [], "parent_id": [], "text": [], "tree_id": [], "author_id": [], "created_at": []}
     for conversation in conversations:
+        if isinstance(conversation, DelabTree):
+            conversation = conversation.as_post_list()
         for post in conversation:
             posts_dict["post_id"].append(post.post_id)
             posts_dict["parent_id"].append(post.parent_id)
@@ -78,25 +81,30 @@ def trees_to_file(conversations):
                 paths.append(list(path))
         trees_paths.append(paths)
 
-    i = 0
-    cur_tree_id = None
-    for path in trees_paths:
-        j=1
-        for post in path:
-            row = posts_df.loc[posts_df['post_id']==post]
-            tree_id = row['tree_id']
 
-        if cur_tree_id == tree_id:
-            i+=1
-        else:
-            i = 1
-            cur_tree_id = tree_id
+    for tree in trees_paths:
+        i=1
+        tree_df =  posts_df[posts_df['post_id']==tree[0][0]]
+        tree_id = tree_df.iloc[0]['tree_id']
+        for path in tree:
+            j=1
+            for node in path:
+                paths_dict['conv_id'].append(tree_id)
+                paths_dict['conv_path'].append(i)
+                paths_dict['conv_seqid'].append(j)
 
+                post_df = posts_df[posts_df['post_id'] == node]
 
+                text = post_df.iloc[0]['text']
+                paths_dict['text'].append(text)
 
+                author_id = post_df.iloc[0]['author_id']
+                paths_dict['author_id'].append(author_id)
 
+                j=j+1
+            i = i + 1
 
-
-
+    download_df = pd.DataFrame(paths_dict)
+    download_df.to_pickle('../data/downloaded.pickle')
     print("Downloaded conversations!")
     return False

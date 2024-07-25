@@ -1,6 +1,9 @@
 import random
 import re
 import pandas as pd
+import os
+from django.shortcuts import redirect
+from pathlib import Path
 
 
 def generate_answer(user_input, context=None):
@@ -13,8 +16,23 @@ def generate_answer(user_input, context=None):
 
 def get_context(conv_df=None):
     if conv_df is None:
-        conv_df = pd.read_pickle("../data/conv_delab.pickle")
-        conv_df['checked'] = False
+        folder_path = Path('../data')
+        file_name = 'conv_delab.pickle'
+
+        # Construct the full file path
+        file_path = folder_path / file_name
+        if file_path.exists():
+            conv_df = pd.read_pickle("../data/conv_delab.pickle")
+            conv_df['checked'] = False
+        else:
+            file_name = 'downloaded.pickle'
+            file_path = folder_path / file_name
+            if not file_path.exists():
+                return "Go to /download"
+            else:
+                conv_df = pd.read_pickle("../data/downloaded.pickle")
+                conv_df['checked'] = False
+
     index_list = conv_df.index.tolist()
     rndm = random.choice(index_list)
     context_row = conv_df.iloc[rndm].to_frame().T
