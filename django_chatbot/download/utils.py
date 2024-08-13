@@ -1,11 +1,13 @@
 import sys
 import os
+import yaml
 from delab_trees import TreeManager
 from delab_trees.delab_tree import DelabTree
 from delab_trees.util import get_root
 import networkx as nx
 import pandas as pd
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..' ,'delab-socialmedia')))
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'delab-socialmedia')))
 
 from connection_util import get_praw, create_mastodon
 from socialmedia import PLATFORM, LANGUAGE, download_conversations, download_daily_sample_conversations
@@ -19,13 +21,12 @@ def download(user_input):
 
 
 def download_mastodon():
-    # TODO: Mastodon App erstellen
-    relative_path = '../../secret/mastodon_secret.yaml'
-
-    # Der absolute Pfad relativ zum aktuellen Skript
-    absolute_path = os.path.abspath(os.path.join(os.path.dirname(__file__), relative_path))
-
-    mastodon = create_mastodon()
+    with open('../secret/mastodon_secret.yaml', 'r') as file:
+        yaml_dict = yaml.safe_load(file)
+    mastodon = create_mastodon(client_id=yaml_dict["client_id"],
+                               client_secret=yaml_dict["client_secret"],
+                               access_token=yaml_dict["access_token"],
+                               api_base_url="https://mastodon.social/")
 
     conversations = download_daily_sample_conversations(platform=PLATFORM.MASTODON,
                                                         language=LANGUAGE.ENGLISH,
@@ -81,13 +82,12 @@ def trees_to_file(conversations):
                 paths.append(list(path))
         trees_paths.append(paths)
 
-
     for tree in trees_paths:
-        i=1
-        tree_df =  posts_df[posts_df['post_id']==tree[0][0]]
+        i = 1
+        tree_df = posts_df[posts_df['post_id'] == tree[0][0]]
         tree_id = tree_df.iloc[0]['tree_id']
         for path in tree:
-            j=1
+            j = 1
             for node in path:
                 paths_dict['conv_id'].append(tree_id)
                 paths_dict['conv_path'].append(i)
@@ -101,7 +101,7 @@ def trees_to_file(conversations):
                 author_id = post_df.iloc[0]['author_id']
                 paths_dict['author_id'].append(author_id)
 
-                j=j+1
+                j = j + 1
             i = i + 1
 
     download_df = pd.DataFrame(paths_dict)

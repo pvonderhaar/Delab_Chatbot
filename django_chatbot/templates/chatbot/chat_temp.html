@@ -92,8 +92,10 @@
     <h1>The Delab Chatbot</h1>
     <div class="container">
         <p>
-            {% for author, text in context_items %}
-                <strong>{{ author }}:</strong> {{ text }} <br><br>
+            {% for index, content in context_items %}
+                {% for author, text in content.items %}
+                    <strong>{{ author }}:</strong> {{ text }} <br><br>
+                {% endfor %}
             {% endfor %}
         </p>
     </div>
