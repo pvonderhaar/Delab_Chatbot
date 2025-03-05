@@ -81,7 +81,7 @@
         </select>
         <br>
         <button onclick="download()">Download</button>
-
+        
         <!-- Ladeanimation -->
         <div id="loader" class="loader"></div>
     </div>
@@ -96,7 +96,7 @@
             var platform = document.getElementById("platform").value;
             // Ladeanimation anzeigen
             document.getElementById("loader").style.display = "block";
-
+            
             fetch("{% url 'ask_view' %}", {
                 method: "POST",
                 headers: {
