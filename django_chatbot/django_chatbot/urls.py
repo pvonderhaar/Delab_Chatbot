@@ -19,6 +19,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('', include("chatbot.urls")),
-    path('download', include("download.urls")),
+    #path('download', include("download.urls")),
     path('admin/', admin.site.urls),
 ]
