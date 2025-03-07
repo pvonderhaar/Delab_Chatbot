@@ -1,13 +1,12 @@
 import random
 import re
-from flask import Flask, render_template_string, send_file
+#from flask import Flask, render_template_string, send_file
 from PIL import Image, ImageDraw
 import io
 import pandas as pd
 
 
 def generate_answer(user_input, context=None):
-    # TODO: write backend script using a gpt model and our own data to generate the answer of the bot (Vansh)
     bot_answer = 'This will be the answer of the bot'
     # I displayed the context here to check if the right context is given to this function
     answer = f"Context: {context} <br> Your answer: {user_input} <br> {bot_answer}"

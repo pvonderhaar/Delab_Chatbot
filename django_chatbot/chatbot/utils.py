@@ -1,20 +1,50 @@
 import random
 import re
 import pandas as pd
-import os
-from django.shortcuts import redirect
+import json
+import requests
 from pathlib import Path
 
 
 def generate_answer(user_input, context=None):
-    # TODO: write backend script using a gpt model and our own data to generate the answer of the bot (Vansh)
-    bot_answer = 'This will be the answer of the bot'
+    # TODO: load answers from docker
+    """    bot_answer = 'This will be the answer of the bot'
     # I displayed the context here to check if the right context is given to this function
     answer = f"Context: {context} <br> Your answer: {user_input} <br> {bot_answer}"
+    """
+    base_url = "http://localhost:8840/analytics"
+    headers = {"Content-Type": "application/json"}
+    # TODO: Structure payload correctly, so that the api can use it
+    payload = {"texts": [user_input]}
+
+    # Send requests to different analytics endpoints
+    try:
+
+        response_general = requests.post(base_url, headers=headers, json=payload).json()
+        response_sentiment = requests.post(f"{base_url}?analytics=sentiment", headers=headers, json=payload).json()
+        response_justification = requests.post(f"{base_url}?analytics=justification", headers=headers,
+                                               json=payload).json()
+        response_cosine = requests.post(f"{base_url}?analytics=cosine", headers=headers, json=payload).json()
+
+        # Combine the responses into a structured format
+        print("Calculating bot anwer")
+        bot_answer = {
+            "general": response_general,
+            "sentiment": response_sentiment,
+            "justification": response_justification,
+            "cosine": response_cosine
+        }
+
+    except requests.exceptions.RequestException as e:
+        bot_answer = f"Error connecting to Docker service: {e}"
+
+    # Display context and response
+    answer = f"Context: {context} <br> Your input: {user_input} <br> Bot answer: {json.dumps(bot_answer, indent=2)}"
     return answer
 
 
 def get_context(conv_df=None):
+    # TODO: resolve error:TypeError: unsupported operand type(s) for -: 'str' and 'int'
     if conv_df is None:
         folder_path = Path('../data')
         file_name = 'conv_delab.pickle'
