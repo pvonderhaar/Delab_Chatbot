@@ -55,7 +55,8 @@
             font-weight: bold;
         }
 
-        input[type="text"] {
+        input[type="text"],
+        input[type="file"] {
             padding: 10px;
             margin-bottom: 20px;
             width: 100%;
@@ -100,6 +101,7 @@
         </p>
     </div>
 
+    <!-- Chatbot Form -->
     <form id="chatForm">
         {% csrf_token %}
         <label for="user_input">Your answer:</label>
@@ -108,15 +110,22 @@
     </form>
 
     <div id="answer"></div>
+
+    <!-- JSON Upload Form -->
     <div class="container">
-        <br>Neuen Datensatz herunterladen <br>
-        <br><br>
-        <button onclick="window.location.href='http://127.0.0.1:8000/download'">Download</button>
+        <h3>Upload JSON-File</h3>
+        <form id="uploadForm">
+            {% csrf_token %}
+            <input type="file" id="jsonFile" name="jsonFile" accept=".json">
+            <button type="submit">Upload</button>
+        </form>
+        <p id="uploadStatus"></p>
     </div>
+
     <script>
-        // JavaScript to handle form submission and display answer
-        const form = document.getElementById('chatForm');
-        form.addEventListener('submit', async function(event) {
+        // Chatbot Form Submission
+        const chatForm = document.getElementById('chatForm');
+        chatForm.addEventListener('submit', async function(event) {
             event.preventDefault();
 
             const userInput = document.getElementById('user_input').value;
@@ -133,6 +142,36 @@
 
             const data = await response.json();
             document.getElementById('answer').innerHTML = data.answer;
+        });
+
+        // JSON Upload Form Submission
+        const uploadForm = document.getElementById('uploadForm');
+        uploadForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const fileInput = document.getElementById('jsonFile');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                document.getElementById('uploadStatus').innerText = "Bitte eine JSON-Datei auswählen!";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('jsonFile', file);
+
+            const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+            const response = await fetch("{% url 'upload_json' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                body: formData
+            });
+
+            const result = await response.json();
+            document.getElementById('uploadStatus').innerText = result.message;
         });
     </script>
 </body>
