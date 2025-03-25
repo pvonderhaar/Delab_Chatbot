@@ -5,130 +5,292 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Delab Chatbot</title>
     <style>
+        /* General Styling */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f9;
+            background-color: #c6d9ec;
             display: flex;
             flex-direction: column;
-            align-items: center;
             height: 100vh;
+            font-size: 20px; /* Default font size for everything */
+        }
+        .normal-header {
+            background-color: #006699;
+            height: 30px;
+            width: 100%;
+            padding: 20px;
+            flex-shrink: 1;
         }
 
         h1 {
-            background-color: #71a4a6;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            width: 150%;
-            box-sizing: border-box;
-        }
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: left;
-        }
-
-        p {
-            margin: 20px;
-            padding: 20px;
-            background-color: #e7e7e7;
-            border-radius: 8px;
-            width: 80%;
-            max-width: 800px;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 20px;
-            width: 80%;
-            max-width: 800px;
-        }
-
-        label {
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-
-        input[type="text"],
-        input[type="file"] {
+            background-color: #ffffff;
+            color: black;
             padding: 10px;
-            margin-bottom: 20px;
-            width: 100%;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            margin: 0;
+            display: flex; /* Flexbox aktivieren */
+            justify-content: space-between; /* Platziert den Inhalt mit Abstand */
+            align-items: center; /* Zentriert vertikal */
+            flex-shrink: 1;
         }
 
-        button {
-            padding: 10px 20px;
-            background-color: #71a4a6;
+        .header-content {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-logo {
+            height: 40px; /* Beispielhöhe für das Bild */
+        }
+
+        .header-text {
+            font-size: 24px; /* Schriftgröße für den Text */
+        }
+
+        h3 {
+            font-size: 22px;
+        }
+
+        /* Layout */
+        .main-container {
+            display: flex;
+            width: 100%;
+            flex:1;
+        }
+
+        /* Chat Section */
+        .chat-container {
+            width: 70%;
+            padding: 20px;
+        }
+
+        .chat-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chat-message {
+            background-color: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            word-wrap: break-word;
+            font-size: 20px; /* Keep chat messages at 20px */
+        }
+
+        .chat-message strong {
+            color: #006699;
+        }
+
+        /* Loading Dots */
+        .loading-dots {
+            display: none;
+            font-size: 20px;
+            color: #555;
+            margin-top: 10px;
+            text-align: left;
+            padding-left: 10px;
+        }
+
+        /* Response Form */
+        .response-container {
+            margin-top: 20px;
+        }
+
+        .response-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #user_input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            font-size: 20px; /* Input field at 20px */
+            background: #f8f8f8;
+        }
+
+        #postButton {
+            padding: 10px 15px;
+            background-color: #FFC300;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 20px;
             cursor: pointer;
+            font-size: 20px; /* Post button at 20px */
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        #postButton:hover {
+            background-color: #006699;
+        }
+
+        /* Upload Section (Unchanged) */
+        .upload-container {
+            width: 30%;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .upload-box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upload-box h3 {
+            margin-bottom: 10px;
+        }
+
+        .file-input-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input[type="file"] {
+            width: 90%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 14px; /* Keep original */
+            background: #f8f8f8;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        #uploadButton {
+            width: 90%;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #FFC300;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px; /* Keep original */
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        #uploadButton:hover {
+            background-color: #006699;
+        }
+        footer {
+            background-color: #ffffff;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 20px;
+            flex-shrink: 0;
+        }
+
+        .footer-content p {
+            font-size: 18px;
+            margin-bottom: 10px;
             margin-top: 20px;
         }
 
-        button:hover {
-            background-color: #496a6b;
+        .footer-logos {
+            display: flex;
+            justify-content: left;
+            gap: 20px;
         }
 
-        #answer {
-            margin: 20px;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 80%;
-            max-width: 800px;
+        .footer-logos img {
+            height: 10px !important;
         }
+
     </style>
+
 </head>
 <body>
-    <h1>The Delab Chatbot</h1>
-    <div class="container">
-        <p>
-            {% for index, content in context_items %}
-                {% for author, text in content.items %}
-                    <strong>{{ author }}:</strong> {{ text }} <br><br>
+    {% load static %}
+    <header class="normal-header"></header>
+
+    <h1>
+        <div class="header-content">
+            <img src="{% static 'images/Delab-logo.jpg' %}" class="header-logo" style="height: 50px; width: auto;">
+            <span class="header-text">DeLab Chatbot</span>
+        </div>
+    </h1>
+
+    <div class="main-container">
+        <!-- Left Side: Chat & Response -->
+        <div class="chat-container">
+            <div class="chat-box" id="chatBox">
+                {% for index, content in context_items %}
+                    {% for author, text in content.items %}
+                        <div class="chat-message">
+                            <strong>User {{ author|add:1  }}:</strong> {{ text }}
+                        </div>
+                    {% endfor %}
                 {% endfor %}
-            {% endfor %}
-        </p>
-    </div>
+            </div>
 
-    <!-- Chatbot Form -->
-    <form id="chatForm">
-        {% csrf_token %}
-        <label for="user_input">Your answer:</label>
-        <input type="text" id="user_input" name="user_input">
-        <button type="submit">Post</button>
-    </form>
+            <!-- Loading Dots (Above Response Box) -->
+            <div class="loading-dots" id="loadingDots">...</div>
 
-    <div id="answer"></div>
+            <!-- Response Form -->
+            <div class="response-container">
+                <div class="response-box">
+                    <input type="text" id="user_input" name="user_input" placeholder="Type your response...">
+                    <button id="postButton">Post</button>
+                </div>
+            </div>
+        </div>
 
-    <!-- JSON Upload Form -->
-    <div class="container">
-        <h3>Upload JSON-File</h3>
-        <form id="uploadForm">
-            {% csrf_token %}
-            <input type="file" id="jsonFile" name="jsonFile" accept=".json">
-            <button type="submit">Upload</button>
-        </form>
-        <p id="uploadStatus"></p>
+        <!-- Right Side: Upload -->
+        <div class="upload-container">
+            <div class="upload-box">
+                <h3>Upload JSON-File</h3>
+                <form id="uploadForm">
+                    {% csrf_token %}
+                    <input type="file" id="jsonFile" name="jsonFile" accept=".json">
+                    <button id="uploadButton" class="blue-button" type="submit">Upload</button>
+                </form>
+                <p id="uploadStatus"></p>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Chatbot Form Submission
-        const chatForm = document.getElementById('chatForm');
-        chatForm.addEventListener('submit', async function(event) {
-            event.preventDefault();
-
+        document.getElementById('postButton').addEventListener('click', async function() {
             const userInput = document.getElementById('user_input').value;
+            if (!userInput.trim()) return; // Prevent empty messages
+
+            const chatBox = document.getElementById('chatBox');
+            const loadingDots = document.getElementById('loadingDots');
+
+            // Display user's message immediately
+            const userMessage = document.createElement('div');
+            userMessage.classList.add('chat-message');
+            userMessage.innerHTML = `<strong>You:</strong> ${userInput}`;
+            chatBox.appendChild(userMessage);
+            document.getElementById('user_input').value = ""; // Clear input field
+
+            // Show loading dots while waiting for bot response
+            loadingDots.style.display = "block";
+
             const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
 
             const response = await fetch("{% url 'ask' %}", {
@@ -141,38 +303,30 @@
             });
 
             const data = await response.json();
-            document.getElementById('answer').innerHTML = data.answer;
-        });
 
-        // JSON Upload Form Submission
-        const uploadForm = document.getElementById('uploadForm');
-        uploadForm.addEventListener('submit', async function(event) {
-            event.preventDefault();
+            // Hide loading dots
+            loadingDots.style.display = "none";
 
-            const fileInput = document.getElementById('jsonFile');
-            const file = fileInput.files[0];
+            // Display bot's response in the chat
+            const botMessage = document.createElement('div');
+            botMessage.classList.add('chat-message');
+            botMessage.innerHTML = `<strong>Chatbot:</strong> ${data.answer}`;
+            chatBox.appendChild(botMessage);
 
-            if (!file) {
-                document.getElementById('uploadStatus').innerText = "Bitte eine JSON-Datei auswählen!";
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('jsonFile', file);
-
-            const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
-
-            const response = await fetch("{% url 'upload_json' %}", {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': csrfToken
-                },
-                body: formData
-            });
-
-            const result = await response.json();
-            document.getElementById('uploadStatus').innerText = result.message;
+            // Auto-scroll to latest message
+            chatBox.scrollTop = chatBox.scrollHeight;
         });
     </script>
+    <footer>
+        <div class="footer-container">
+            <img src="{% static 'images/ARGtech-logo.png' %}" style="height: 50px; width: auto;">
+            <img src="{% static 'images/NewEthos-logo.jpg' %}" style="height: 50px; width: auto;">
+            <img src="{% static 'images/UniGoettingen-logo.png' %}" style="height: 50px; width: auto;">
+            <img src="{% static 'images/UniMaastricht-logo.png' %}" style="height: 50px; width: auto;">
+            <img src="{% static 'images/UniPassau-logo.png' %}" style="height: 50px; width: auto;">
+            <img src="{% static 'images/VolkswagenStiftung-logo.png' %}" style="height: 50px; width: auto;">
+        </div>
+    </footer>
+
 </body>
 </html>
