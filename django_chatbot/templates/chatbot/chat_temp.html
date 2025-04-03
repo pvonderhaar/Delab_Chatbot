@@ -10,7 +10,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #c6d9ec;
+            background-color: #ffffff;
             display: flex;
             flex-direction: column;
             height: 100vh;
@@ -24,31 +24,58 @@
             flex-shrink: 1;
         }
 
+        /* Header Styling */
         h1 {
             background-color: #ffffff;
             color: black;
             padding: 10px;
             margin: 0;
-            display: flex; /* Flexbox aktivieren */
-            justify-content: space-between; /* Platziert den Inhalt mit Abstand */
-            align-items: center; /* Zentriert vertikal */
-            flex-shrink: 1;
+            display: flex;
+            justify-content: center; /* Überschrift bleibt zentriert */
+            align-items: center;
+            font-size: 28px;
         }
 
         .header-content {
             display: flex;
             width: 100%;
-            justify-content: space-between;
+            justify-content: space-between; /* Elemente gleichmäßig verteilen */
             align-items: center;
         }
 
-        .header-logo {
-            height: 40px; /* Beispielhöhe für das Bild */
+        /* Linkes Logo */
+        .header-left {
+            flex: 1;
+            display: flex;
+            justify-content: flex-start;
+            padding-left: 20px;
         }
 
-        .header-text {
-            font-size: 24px; /* Schriftgröße für den Text */
+        /* Überschrift in der Mitte */
+        .header-center {
+            flex: 1;
+            text-align: center;
         }
+
+        /* Rechtes Logo (Volkswagen-Stiftung) */
+        .header-right {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            padding-right: 20px;
+        }
+
+        /* Logo Styling */
+        .header-logo {
+            height: 50px;
+            width: auto;
+        }
+
+        /* Optional: Volkswagen-Logo kleiner machen, falls zu groß */
+        .volkswagen-logo {
+            height: 40px; /* Anpassen nach Bedarf */
+        }
+
 
         h3 {
             font-size: 22px;
@@ -59,6 +86,7 @@
             display: flex;
             width: 100%;
             flex:1;
+
         }
 
         /* Chat Section */
@@ -70,22 +98,57 @@
         .chat-box {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 20px;
         }
 
         .chat-message {
+            display: flex;
+            align-items: flex-start; /* Startet oben für eine saubere Linie */
+            gap: 3px;/* Abstand zwischen Bild und Text */
+            position: relative; /* Nötig für die Linie */
+
+        }
+
+        .chat-message img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+
+        /* 💡 Die Linie */
+        .chat-message::before {
+            content: "";
+            position: absolute;
+            width: 2px;
+            background-color: rgb(212, 219, 226); /* Grauton wie in deinem Beispiel */
+            top: 50px; /* Startpunkt unter dem Profilbild */
+            bottom: -20px; /* Reicht etwas tiefer, um die Verbindung klarzumachen */
+            left: 25px; /* Exakt in der Mitte des Profilbilds */
+        }
+
+        /* 🔹 Entfernt die Linie bei der letzten Nachricht */
+        .chat-box .chat-message:last-child::before {
+            display: none;
+        }
+
+        .chat-text {
             background-color: white;
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            width: 100%;
+            padding: 10px;
+            max-width: 100%;
             word-wrap: break-word;
-            font-size: 20px; /* Keep chat messages at 20px */
+            font-size: 20px;
         }
 
         .chat-message strong {
+            display: block;
             color: #006699;
+            margin-bottom: 5px; /* Absatz nach "You" bzw. "Chatbot" */
         }
+
+        .chat-box .chat-message:first-child .chat-line {
+            display: none;
+        }
+
 
         /* Loading Dots */
         .loading-dots {
@@ -140,6 +203,7 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
+            margin-left: -20px;
         }
 
         .upload-box {
@@ -202,18 +266,19 @@
             padding: 20px;
             margin-top: 20px;
             flex-shrink: 0;
+
         }
 
         .footer-content p {
             font-size: 18px;
             margin-bottom: 10px;
             margin-top: 20px;
+
         }
 
         .footer-logos {
             display: flex;
             justify-content: left;
-            gap: 20px;
         }
 
         .footer-logos img {
@@ -229,10 +294,23 @@
 
     <h1>
         <div class="header-content">
-            <img src="{% static 'images/Delab-logo.jpg' %}" class="header-logo" style="height: 50px; width: auto;">
-            <span class="header-text">DeLab Chatbot</span>
+            <!-- Linkes Logo -->
+            <div class="header-left">
+                <img src="{% static 'images/Delab-logo.jpg' %}" class="header-logo">
+            </div>
+
+            <!-- Mittige Überschrift -->
+            <div class="header-center">
+                <span class="header-text">DeLab Moderation Bot</span>
+            </div>
+
+            <!-- Rechtes Logo (Volkswagen-Stiftung) -->
+            <div class="header-right">
+                <img src="{% static 'images/VolkswagenStiftung-logo.png' %}" class="header-logo volkswagen-logo">
+            </div>
         </div>
     </h1>
+
 
     <div class="main-container">
         <!-- Left Side: Chat & Response -->
@@ -241,11 +319,22 @@
                 {% for index, content in context_items %}
                     {% for author, text in content.items %}
                         <div class="chat-message">
-                            <strong>User {{ author|add:1  }}:</strong> {{ text }}
+                            {% if author == 0 %}
+                                <img src="{% static 'images/profile_user0.png' %}" alt="profile_user0.png">
+                            {% elif author == 1 %}
+                                <img src="{% static 'images/profile_user1.png' %}" alt="profile_user1.png">
+                            {% else %}
+                                <img src="{% static 'images/woman_speech2.png' %}">
+                            {% endif %}
+                            <div class="chat-line"></div> <!-- Linie hinzugefügt -->
+                            <div class="chat-text">
+                                <strong>User {{ author|add:1 }}</strong> {{ text }}
+                            </div>
                         </div>
                     {% endfor %}
                 {% endfor %}
             </div>
+
 
             <!-- Loading Dots (Above Response Box) -->
             <div class="loading-dots" id="loadingDots">...</div>
@@ -263,7 +352,7 @@
         <div class="upload-container">
             <div class="upload-box">
                 <h3>Upload JSON-File</h3>
-                <form id="uploadForm">
+                <form id="jsonUploadForm" enctype="multipart/form-data">
                     {% csrf_token %}
                     <input type="file" id="jsonFile" name="jsonFile" accept=".json">
                     <button id="uploadButton" class="blue-button" type="submit">Upload</button>
@@ -276,19 +365,24 @@
     <script>
         document.getElementById('postButton').addEventListener('click', async function() {
             const userInput = document.getElementById('user_input').value;
-            if (!userInput.trim()) return; // Prevent empty messages
+            if (!userInput.trim()) return; // Verhindert leere Nachrichten
 
             const chatBox = document.getElementById('chatBox');
             const loadingDots = document.getElementById('loadingDots');
 
-            // Display user's message immediately
+            // Nutzer-Nachricht erstellen
             const userMessage = document.createElement('div');
             userMessage.classList.add('chat-message');
-            userMessage.innerHTML = `<strong>You:</strong> ${userInput}`;
+            userMessage.innerHTML = `
+                <img src="{% static 'images/profile_you.png' %}" alt="profile_user0.png">
+                <div class="chat-text" style="margin-left: 10px;">
+                    <strong>You</strong>${userInput}
+                </div>
+            `;
             chatBox.appendChild(userMessage);
-            document.getElementById('user_input').value = ""; // Clear input field
+            document.getElementById('user_input').value = ""; // Eingabe leeren
 
-            // Show loading dots while waiting for bot response
+            // Ladeanimation aktivieren
             loadingDots.style.display = "block";
 
             const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
@@ -304,27 +398,63 @@
 
             const data = await response.json();
 
-            // Hide loading dots
+            // Ladeanimation verstecken
             loadingDots.style.display = "none";
 
-            // Display bot's response in the chat
+            // Chatbot-Nachricht erstellen
             const botMessage = document.createElement('div');
             botMessage.classList.add('chat-message');
-            botMessage.innerHTML = `<strong>Chatbot:</strong> ${data.answer}`;
+            botMessage.innerHTML = `
+                <img src="{% static 'images/profile_bot.png' %}" alt="profile_user0.png">
+                <div class="chat-text" style="margin-left: 10px;">
+                    <strong>Chatbot</strong>${data.answer}
+                </div>
+            `;
             chatBox.appendChild(botMessage);
 
-            // Auto-scroll to latest message
+            // Automatisches Scrollen zum neuesten Beitrag
             chatBox.scrollTop = chatBox.scrollHeight;
         });
-    </script>
+
+        document.getElementById("jsonUploadForm").addEventListener("submit", async function(event) {
+            event.preventDefault(); // Standardformularverhalten verhindern
+
+            const formData = new FormData();
+            const jsonFile = document.getElementById("jsonFile").files[0];
+
+            if (!jsonFile) {
+                alert("Bitte eine JSON-Datei auswählen.");
+                return;
+            }
+
+            formData.append("jsonFile", jsonFile);
+
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            try {
+                const response = await fetch("{% url 'upload_json' %}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrfToken // CSRF-Token für Sicherheit
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+                document.getElementById("uploadMessage").innerText = result.message;
+            } catch (error) {
+                console.error("Fehler beim Hochladen:", error);
+                document.getElementById("uploadMessage").innerText = "Fehler beim Hochladen!";
+            }
+        });
+        </script>
     <footer>
         <div class="footer-container">
+            <img src="{% static 'images/UniPassau-logo.png' %}" style="height: 50px; width: auto;">
             <img src="{% static 'images/ARGtech-logo.png' %}" style="height: 50px; width: auto;">
-            <img src="{% static 'images/NewEthos-logo.jpg' %}" style="height: 50px; width: auto;">
             <img src="{% static 'images/UniGoettingen-logo.png' %}" style="height: 50px; width: auto;">
             <img src="{% static 'images/UniMaastricht-logo.png' %}" style="height: 50px; width: auto;">
-            <img src="{% static 'images/UniPassau-logo.png' %}" style="height: 50px; width: auto;">
-            <img src="{% static 'images/VolkswagenStiftung-logo.png' %}" style="height: 50px; width: auto;">
+            <img src="{% static 'images/NewEthos-logo.jpg' %}" style="height: 50px; width: auto;">
         </div>
     </footer>
 

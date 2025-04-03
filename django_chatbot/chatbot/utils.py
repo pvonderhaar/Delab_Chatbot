@@ -17,7 +17,6 @@ def generate_answer(user_input, context=None):
             texts.append(text)
     texts.append(user_input)
     payload = {"texts": texts}
-    print("calc response")
     try:
         response_llm = requests.post(f"{base_url}llm", headers=headers, json=payload).json()
         #response_inference = requests.post(f"{base_url}inference", headers=headers, json=payload).json()
