@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Delab Chatbot</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
         /* General Styling */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Inter, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #ffffff;
@@ -27,13 +28,14 @@
         /* Header Styling */
         h1 {
             background-color: #ffffff;
-            color: black;
+            color: #484b4e;
             padding: 10px;
             margin: 0;
             display: flex;
             justify-content: center; /* Überschrift bleibt zentriert */
             align-items: center;
-            font-size: 28px;
+            font-size: 24px;
+            font-family: 'Inter', sans-serif;
         }
 
         .header-content {
@@ -67,15 +69,14 @@
 
         /* Logo Styling */
         .header-logo {
-            height: 50px;
+            height: 60px;
             width: auto;
         }
 
         /* Optional: Volkswagen-Logo kleiner machen, falls zu groß */
         .volkswagen-logo {
-            height: 40px; /* Anpassen nach Bedarf */
+            height: 50px; /* Anpassen nach Bedarf */
         }
-
 
         h3 {
             font-size: 22px;
@@ -137,6 +138,7 @@
             max-width: 100%;
             word-wrap: break-word;
             font-size: 20px;
+            color: #484b4e;
         }
 
         .chat-message strong {
@@ -203,7 +205,15 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            margin-left: -20px;
+            margin-left: 5px;
+            margin-right: 25px;
+        }
+        .upload-wrapper {
+            display: flex;
+            flex-direction: column; /* Stack vertically */
+            gap: 20px; /* Optional spacing between upload and analytics */
+            width: 100%;
+            align-items: center;
         }
 
         .upload-box {
@@ -259,30 +269,79 @@
         #uploadButton:hover {
             background-color: #006699;
         }
-        footer {
-            background-color: #ffffff;
-            color: white;
-            text-align: center;
-            padding: 20px;
-            margin-top: 20px;
-            flex-shrink: 0;
-
-        }
-
-        .footer-content p {
-            font-size: 18px;
-            margin-bottom: 10px;
-            margin-top: 20px;
-
-        }
-
-        .footer-logos {
+        .analytics-container {
+            width: 112%;
+            padding: 0;
             display: flex;
-            justify-content: left;
+            justify-content: center;
+            align-items: flex-start;
+            margin-left: 0;
         }
 
-        .footer-logos img {
-            height: 10px !important;
+        .analytics-box {
+            background: #c6d9ec; /* grau */
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            width: 90%;
+            margin-top: 20px;
+            font-size: 16px;
+            color: #333;
+        }
+        .analytics-box h3 {
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+        .analytics-box ul {
+           list-style-type: disc;
+        }
+        .analytics-box li {
+            margin-bottom: 5px;
+        }
+
+        .trafficlight-box{
+            background: #c6d9ec; /* grau */
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            width: 10%;
+            margin-top: 20px;
+            font-size: 16px;
+            color: #333;
+            margin-left: 10px;
+        }
+
+        #reloadButton {
+            margin-top: 10px;
+            padding: 10px 15px;
+            background-color: #FFC300;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.3s;
+            width: 50%
+        }
+
+        #reloadButton:hover {
+            background-color: #006699;
+        }
+
+        .footer-container {
+            display: flex;
+            justify-content: center; /* Zentriert den gesamten Footer-Inhalt */
+            align-items: center;
+            gap: 10px; /* Abstand zwischen Logos */
+            padding: 20px 0;
+        }
+
+        .footer-container img {
+            height: 50px;
+            width: auto;
         }
 
     </style>
@@ -350,16 +409,31 @@
 
         <!-- Right Side: Upload -->
         <div class="upload-container">
-            <div class="upload-box">
-                <h3>Upload JSON-File</h3>
-                <form id="jsonUploadForm" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <input type="file" id="jsonFile" name="jsonFile" accept=".json">
-                    <button id="uploadButton" class="blue-button" type="submit">Upload</button>
-                </form>
-                <p id="uploadStatus"></p>
+            <div class="upload-wrapper">
+                <div class="upload-box">
+                    <h3>Upload JSON-File</h3>
+                    <form id="jsonUploadForm" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="file" id="jsonFile" name="jsonFile" accept=".json">
+                        <button id="uploadButton" class="blue-button" type="submit">Upload</button>
+                    </form>
+                    <p id="uploadStatus"></p>
+                </div>
+
+                <div class="analytics-container">
+                    <div id="analyticsPanel" class="analytics-box">
+                        <h3>Analytics</h3>
+                        <ul id="analyticsList"></ul>
+                    </div>
+                    <div class="trafficlight-box">Traffic Light</div>
+                </div>
+
+                <button id="reloadButton">Reload</button>
+
             </div>
         </div>
+
+
     </div>
 
     <script>
@@ -375,7 +449,7 @@
             userMessage.classList.add('chat-message');
             userMessage.innerHTML = `
                 <img src="{% static 'images/profile_you.png' %}" alt="profile_user0.png">
-                <div class="chat-text" style="margin-left: 10px;">
+                <div class="chat-text">
                     <strong>You</strong>${userInput}
                 </div>
             `;
@@ -446,6 +520,9 @@
                 console.error("Fehler beim Hochladen:", error);
                 document.getElementById("uploadMessage").innerText = "Fehler beim Hochladen!";
             }
+        });
+        document.getElementById("reloadButton").addEventListener("click", () => {
+            location.reload();
         });
         </script>
     <footer>

@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 def generate_answer(user_input, context=None):
-    base_url = "http://localhost:8840/"
+    base_url = "http://delab.arg.tech/"
     headers = {"Content-Type": "application/json"}
 
     texts = []
