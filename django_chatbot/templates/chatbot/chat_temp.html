@@ -289,7 +289,7 @@
             border-radius: 12px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             text-align: left;
-            width: 800%;
+            width: 100%;
             margin-top: 0px;
             font-size: 16px;
             color: #333;
@@ -314,7 +314,7 @@
             border-radius: 12px;
             overflow: hidden;
             margin-top: -24px;
-            margin-right: -24px;
+
         }
 
         .trafficlight-img {
@@ -446,12 +446,12 @@
                 <button id="reloadButton">Reload</button>
                 <div class="sidebar-bottom-right" id="chatExtras" style="display: none;">
                     <div class="analytics-container">
-                        <div id="analyticsPanel" class="analytics-box">
-                            <h3>Analytics</h3>
-                            <ul id="analyticsList"></ul>
-                        </div>
                         <div class="trafficlight-box">
                             <img src="{% static 'images/TrafficLight/TrafficLight_default.jpeg' %}" alt="Ampel" class="trafficlight-img" id="trafficLightImg">
+                        </div>
+                        <div id="analyticsPanel" class="analytics-box">
+                            <h3>Relevant Features</h3>
+                            <ul id="analyticsList"></ul>
                         </div>
                     </div>
                 </div>
@@ -523,10 +523,20 @@
                 const analyticsList = document.getElementById("analyticsList");
                 analyticsList.innerHTML = ""; // Clear vorherigen Inhalt
 
-                data.answer.features.forEach(feature => {
+                data.answer.features.forEach((feature,index) => {
                     const item = document.createElement("li");
-                    item.innerText = `Text: "${feature.texts}" | Sentiment: 🔹 Neutral ${feature.sent_neutral}, 😊 Positive ${feature.sent_positive}, 😠 Negative ${feature.sent_negative}`;
-                    analyticsList.appendChild(item);
+                    if (index === 0) {
+                        item.innerHTML = `<strong>User Comment: </strong>  Sentiment: Neutral ${feature.sent_neutral}, Positive ${feature.sent_positive}, Negative ${feature.sent_negative}`;
+                        analyticsList.appendChild(item);
+                    } else if (index === 1) {
+                        item.innerHTML = `<strong>Input Comment: </strong>  Sentiment: Neutral ${feature.sent_neutral}, Positive ${feature.sent_positive}, Negative ${feature.sent_negative}`;
+                        analyticsList.appendChild(item);
+
+                        const secondItem = document.createElement("li");
+                        secondItem.innerHTML = `<strong> Between Comments </strong> Justification: ${feature.argpred_1_dev}`;
+                        analyticsList.appendChild(secondItem);
+                    }
+
                 });
                 const interventionProb = data.answer.intervention_prob[0];
                 const trafficLightImg = document.getElementById("trafficLightImg");

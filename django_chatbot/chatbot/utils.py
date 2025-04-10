@@ -35,7 +35,6 @@ def get_context(conv_df=None):
         json_file = folder_path / 'conv_delab.json'  # Check for JSON file first
         pickle_file = folder_path / 'conv_delab.pickle'  # Original pickle file
         if json_file.exists():
-            print("using json")
             with open(json_file, 'r', encoding='utf-8') as f:
                 data = json.load(f)
             conv_df = pd.DataFrame(data)  # Convert JSON to Pandas DataFrame
