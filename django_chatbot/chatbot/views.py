@@ -7,6 +7,8 @@ from django.views.decorators.http import require_POST
 from .utils import generate_answer, get_context
 import os
 from django.conf import settings
+import json
+import requests
 
 UPLOAD_DIR = os.path.join(settings.BASE_DIR, 'data')
 
@@ -21,6 +23,7 @@ def index_view(request):
 @csrf_exempt
 @require_POST
 def ask_view(request):
+    print("in ask_view")
     user_input = request.POST.get('user_input')
     context = request.session.get('context', get_context())
     answer = generate_answer(user_input, context)
@@ -49,3 +52,26 @@ def upload_json(request):
             destination.write(chunk)
 
     return JsonResponse({'message': f'Datei {json_file.name} erfolgreich hochgeladen!'})
+
+@csrf_exempt
+def get_sentiment(request):
+    print(request.body)
+    payload = json.loads(request.body)
+    result = requests.post("http://delab.arg.tech/analytics?analytics=sentiment", json=payload).json()
+    return JsonResponse(result)
+
+@csrf_exempt
+def get_justification(request):
+    payload = json.loads(request.body)
+    result = requests.post("http://delab.arg.tech/analytics?analytics=justification", json=payload).json()
+    return JsonResponse(result)
+
+def get_cosine(request):
+    payload = json.loads(request.body)
+    result = requests.post("http://delab.arg.tech/analytics?analytics=cosine", json=payload).json()
+    return JsonResponse(result)
+
+def get_inference(request):
+    payload = json.loads(request.body)
+    result = requests.post("http://delab.arg.tech/inference", json=payload).json()
+    return JsonResponse(result)

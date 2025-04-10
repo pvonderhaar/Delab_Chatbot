@@ -19,12 +19,8 @@ def generate_answer(user_input, context=None):
     payload = {"texts": texts}
     try:
         response_llm = requests.post(f"{base_url}llm", headers=headers, json=payload).json()
-        #response_inference = requests.post(f"{base_url}inference", headers=headers, json=payload).json()
-        if "df" in response_llm:
-            bot_answer = response_llm["df"][0]["out_llm"]
-        else:
-            bot_answer = response_llm
-
+        print(response_llm)
+        bot_answer = response_llm
     except requests.exceptions.RequestException as e:
         bot_answer = f"Error connecting to Docker service: {e}"
 
