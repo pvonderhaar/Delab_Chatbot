@@ -44,20 +44,34 @@ document.getElementById('postButton').addEventListener('click', async function()
             }
 
 
-            // Chatbot-Nachricht erstellen
-            const botMessage = document.createElement('div');
-            botMessage.classList.add('chat-message');
-            botMessage.innerHTML = `
-                <img src="${STATIC_PATHS.profileBot}" alt="profile_user0.png">
-                <div class="chat-text">
-                    <strong>Chatbot</strong>${botText}
-                </div>
-            `;
+            const interventionProb = data.answer.intervention_probability[0];
+            if(interventionProb > 0.7){
+                const botMessage = document.createElement('div');
+                botMessage.classList.add('chat-message');
+                botMessage.innerHTML = `
+                    <img src="${STATIC_PATHS.profileBot}" alt="profile_user0.png">
+                    <div class="chat-text">
+                        <strong>Chatbot</strong>${botText}
+                    </div>
+                `;
             chatBox.appendChild(botMessage);
+            }
             if (showAnalytics) {
                 document.getElementById("chatExtras").style.display = "block";
                 const analyticsList = document.getElementById("analyticsList");
                 analyticsList.innerHTML = ""; // Vorherigen Inhalt löschen
+
+                let interventionLabel = document.getElementById("interventionLabel");
+                if (!interventionLabel) {
+                    interventionLabel = document.createElement("p");
+                    interventionLabel.id = "interventionLabel";
+                    const analyticsBox = document.getElementById("analyticsPanel");
+                    analyticsBox.insertBefore(interventionLabel, analyticsBox.querySelector("ul"));
+                }
+
+                interventionLabel.style.fontWeight = "bold";
+                interventionLabel.style.color = interventionProb > 0.7 ? "red" : "green";
+                interventionLabel.innerText = interventionProb > 0.7 ? "Intervention needed" : "No Intervention needed";
 
                 const featureValues = data.answer.features[0];
                 const featureImportance = data.answer.feature_importance[0];
@@ -105,6 +119,7 @@ document.getElementById('postButton').addEventListener('click', async function()
                     .sort((a, b) => Math.abs(b.value) - Math.abs(a.value))
                     .slice(0, 5);
 
+
                 topFeatures.forEach(({ key, value }) => {
                     const actualValue = featureValues[key] !== undefined ? featureValues[key] : "N/A";
                     const displayName = featureNameMap[key] || key;
@@ -113,13 +128,13 @@ document.getElementById('postButton').addEventListener('click', async function()
                     item.innerHTML = `<strong>${displayName}</strong>: ${actualValue}`;
                     analyticsList.appendChild(item);
                 });
-                const interventionProb = data.answer.intervention_probability[0];
+
                 const trafficLightImg = document.getElementById("trafficLightImg");
 
                 // Bildpfad festlegen je nach Wahrscheinlichkeit
                 let imgFullPath = "";
 
-                if (interventionProb > 0.6) {
+                if (interventionProb > 0.7) {
                     imgFullPath = STATIC_PATHS.red;
                 } else if (interventionProb > 0.4) {
                     imgFullPath = STATIC_PATHS.yellow;
