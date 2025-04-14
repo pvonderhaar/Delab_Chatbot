@@ -42,9 +42,10 @@ def upload_json(request):
         return JsonResponse({'message': 'Nur JSON-Dateien sind erlaubt!'}, status=400)
 
     # Sicherstellen, dass das Verzeichnis existiert
-    os.makedirs(UPLOAD_DIR, exist_ok=True)
+    upload_dir = settings.MEDIA_ROOT
+    os.makedirs(upload_dir, exist_ok=True)
 
-    file_path = '../data/conv_delab.json'
+    file_path = upload_dir / 'conv_delab.json'
 
     # Datei speichern
     with open(file_path, 'wb+') as destination:
@@ -52,26 +53,3 @@ def upload_json(request):
             destination.write(chunk)
 
     return JsonResponse({'message': f'Datei {json_file.name} erfolgreich hochgeladen!'})
-
-@csrf_exempt
-def get_sentiment(request):
-    print(request.body)
-    payload = json.loads(request.body)
-    result = requests.post("http://delab.arg.tech/analytics?analytics=sentiment", json=payload).json()
-    return JsonResponse(result)
-
-@csrf_exempt
-def get_justification(request):
-    payload = json.loads(request.body)
-    result = requests.post("http://delab.arg.tech/analytics?analytics=justification", json=payload).json()
-    return JsonResponse(result)
-
-def get_cosine(request):
-    payload = json.loads(request.body)
-    result = requests.post("http://delab.arg.tech/analytics?analytics=cosine", json=payload).json()
-    return JsonResponse(result)
-
-def get_inference(request):
-    payload = json.loads(request.body)
-    result = requests.post("http://delab.arg.tech/inference", json=payload).json()
-    return JsonResponse(result)

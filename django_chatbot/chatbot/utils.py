@@ -3,6 +3,7 @@ import re
 import pandas as pd
 import json
 import requests
+from django.conf import settings
 from pathlib import Path
 
 
@@ -17,6 +18,7 @@ def generate_answer(user_input, context=None):
             texts.append(text)
     texts.append(user_input)
     payload = {"texts": texts}
+    print(payload)
     try:
         response_llm = requests.post(f"{base_url}llm", headers=headers, json=payload).json()
         print(response_llm)
@@ -31,7 +33,7 @@ def generate_answer(user_input, context=None):
 def get_context(conv_df=None):
     json_used = False
     if conv_df is None:
-        folder_path = Path('../data')
+        folder_path = settings.MEDIA_ROOT
         json_file = folder_path / 'conv_delab.json'  # Check for JSON file first
         pickle_file = folder_path / 'conv_delab.pickle'  # Original pickle file
         if json_file.exists():
