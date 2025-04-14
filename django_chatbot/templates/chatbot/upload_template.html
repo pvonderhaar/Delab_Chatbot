@@ -1,51 +1,89 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload JSON File</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #f4f4f9;
-        }
-        h1 {
-            color: #71a4a6;
-        }
-        form {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-        input[type="file"] {
-            margin-bottom: 10px;
-        }
-        button {
-            background-color: #71a4a6;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #496a6b;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/chatbot.css' %}">
 </head>
 <body>
-    <h1>Upload a JSON File</h1>
-    <form action="{% url 'upload_json' %}" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="file" name="json_file" accept=".json" required>
-        <button type="submit">Upload</button>
-    </form>
+    <header class="normal-header"></header>
+
+    <h1>
+        <div class="header-content">
+            <div class="header-left">
+                <img src="{% static 'images/Delab-logo.jpg' %}" class="header-logo">
+            </div>
+            <div class="header-center">
+                <span class="header-text">DeLab Moderation Bot</span>
+            </div>
+            <div class="header-right">
+                <img src="{% static 'images/VolkswagenStiftung-logo.png' %}" class="header-logo volkswagen-logo">
+            </div>
+        </div>
+    </h1>
+
+    <div class="upload-container" style="width: 100%; display: flex; justify-content: center; align-items: center; flex: 1;">
+        <div class="upload-box">
+            <h3>Upload JSON-File</h3>
+            <form id="jsonUploadForm" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="file" id="jsonFile" name="jsonFile" accept=".json">
+                <button id="uploadButton" class="blue-button" type="submit">Upload</button>
+            </form>
+            <p id="uploadStatus"></p>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <img src="{% static 'images/UniPassau-logo.png' %}">
+            <img src="{% static 'images/ARGtech-logo.png' %}">
+            <img src="{% static 'images/UniGoettingen-logo.png' %}">
+            <img src="{% static 'images/UniMaastricht-logo.png' %}">
+            <img src="{% static 'images/NewEthos-logo.jpg' %}">
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById("jsonUploadForm").addEventListener("submit", async function(event) {
+            event.preventDefault(); // Standardformularverhalten verhindern
+
+            const formData = new FormData();
+            const jsonFile = document.getElementById("jsonFile").files[0];
+
+            if (!jsonFile) {
+                alert("Bitte eine JSON-Datei auswählen.");
+                return;
+            }
+
+            formData.append("jsonFile", jsonFile);
+
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            try {
+                const response = await fetch("/upload_json/", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrfToken
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+                document.getElementById("uploadStatus").innerText = result.message;
+
+                // Wenn Upload erfolgreich (du kannst hier auch auf result.success prüfen, falls vorhanden)
+                if (response.ok) {
+                    setTimeout(() => {
+                        location.reload();
+                    });
+                }
+            } catch (error) {
+                console.error("Fehler beim Hochladen:", error);
+                document.getElementById("uploadStatus").innerText = "Fehler beim Hochladen!";
+            }
+        });
+    </script>
 </body>
 </html>

@@ -14,14 +14,13 @@ def generate_answer(user_input, context=None):
     texts = []
     # format context like the api requests
     for entry in context.values():
-        for text in entry.values():
-            texts.append(text)
-    texts.append(user_input)
+        formatted = ';;'.join([list(entry.keys())[0], list(entry.values())[0]])
+        texts.append(formatted)
+    texts.append("3;;" + user_input)
     payload = {"texts": texts}
-    print(payload)
+
     try:
         response_llm = requests.post(f"{base_url}llm", headers=headers, json=payload).json()
-        print(response_llm)
         bot_answer = response_llm
     except requests.exceptions.RequestException as e:
         bot_answer = f"Error connecting to Docker service: {e}"

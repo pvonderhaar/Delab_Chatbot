@@ -7,10 +7,7 @@ from django.views.decorators.http import require_POST
 from .utils import generate_answer, get_context
 import os
 from django.conf import settings
-import json
-import requests
 
-UPLOAD_DIR = os.path.join(settings.BASE_DIR, 'data')
 
 def index_view(request):
     request.session['context'] = get_context()
@@ -23,7 +20,6 @@ def index_view(request):
 @csrf_exempt
 @require_POST
 def ask_view(request):
-    print("in ask_view")
     user_input = request.POST.get('user_input')
     context = request.session.get('context', get_context())
     answer = generate_answer(user_input, context)

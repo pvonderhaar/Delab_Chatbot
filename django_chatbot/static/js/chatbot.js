@@ -57,24 +57,63 @@ document.getElementById('postButton').addEventListener('click', async function()
             if (showAnalytics) {
                 document.getElementById("chatExtras").style.display = "block";
                 const analyticsList = document.getElementById("analyticsList");
-                analyticsList.innerHTML = ""; // Clear vorherigen Inhalt
+                analyticsList.innerHTML = ""; // Vorherigen Inhalt löschen
 
-                data.answer.features.forEach((feature,index) => {
+                const featureValues = data.answer.features[0];
+                const featureImportance = data.answer.feature_importance[0];
+
+                const featureNameMap = {
+                    "sent_positive": "Positive sentiment (user comment)",
+                    "sent_neutral": "Neutral sentiment (user comment)",
+                    "sent_negative": "Negative sentiment (user comment)",
+                    "2_sent_negative": "Negative sentiment (input comment)",
+                    "2_sent_neutral": "Neutral sentiment (input comment)",
+                    "2_sent_positive": "Positive sentiment (input comment)",
+                    "sent_negative_dev": "Sentiment gap between comments (negative)",
+                    "sent_neutral_dev": "Sentiment gap between comments (neutral)",
+                    "sent_positive_dev": "Sentiment gap between comments (positive)",
+                    "argpred_0": "Justification (user comment)",
+                    "argpred_1": "Justification (user comment)",
+                    "2_argpred_0": "Justification (input comment)",
+                    "2_argpred_1": "Justification (input comment)",
+                    "argpred_0_dev": "Justification between comments",
+                    "argpred_1_dev": "Justification between comments",
+                    "discourse_markers_count": "Discourse markers (user comment)",
+                    "epistemic_markers_count": "Epistemic markers (user comment)",
+                    "lexical_reachness": "Lexical richness (user comment)",
+                    "dependency_depth": "Syntactic complexity (user comment)",
+                    "dependency_score": "Syntactic complexity (user comment)",
+                    "self_contradiction": "Self contradiction (between user comments)",
+                    "2_discourse_markers_count": "Discourse markers (input comment)",
+                    "2_epistemic_markers_count": "Epistemic markers (input comment)",
+                    "2_lexical_reachness": "Lexical richness (input comment)",
+                    "2_dependency_depth": "Syntactic complexity (input comment)",
+                    "2_dependency_score": "Syntactic complexity (input comment)",
+                    "2_self_contradiction": "Self contradiction (input comment)",
+                    "cosine_prev": "Lexical similarity between comments",
+                    "no_relation": "Argument relations (none)",
+                    "inference": "Argument relations (support between comments)",
+                    "conflict": "Argument relations (attack between comments)",
+                    "rephrase": "Argument relations (rephrase between comments)"
+                };
+
+                const importanceArray = Object.entries(featureImportance)
+                    .filter(([key]) => key !== '_row')
+                    .map(([key, value]) => ({ key, value }));
+
+                const topFeatures = importanceArray
+                    .sort((a, b) => Math.abs(b.value) - Math.abs(a.value))
+                    .slice(0, 5);
+
+                topFeatures.forEach(({ key, value }) => {
+                    const actualValue = featureValues[key] !== undefined ? featureValues[key] : "N/A";
+                    const displayName = featureNameMap[key] || key;
+
                     const item = document.createElement("li");
-                    if (index === 0) {
-                        item.innerHTML = `<strong>User Comment: </strong>  Sentiment: Neutral ${feature.sent_neutral}, Positive ${feature.sent_positive}, Negative ${feature.sent_negative}`;
-                        analyticsList.appendChild(item);
-                    } else if (index === 1) {
-                        item.innerHTML = `<strong>Input Comment: </strong>  Sentiment: Neutral ${feature.sent_neutral}, Positive ${feature.sent_positive}, Negative ${feature.sent_negative}`;
-                        analyticsList.appendChild(item);
-
-                        const secondItem = document.createElement("li");
-                        secondItem.innerHTML = `<strong> Between Comments </strong> Justification: ${feature.argpred_1_dev}`;
-                        analyticsList.appendChild(secondItem);
-                    }
-
+                    item.innerHTML = `<strong>${displayName}</strong>: ${actualValue}`;
+                    analyticsList.appendChild(item);
                 });
-                const interventionProb = data.answer.intervention_prob[0];
+                const interventionProb = data.answer.intervention_probability[0];
                 const trafficLightImg = document.getElementById("trafficLightImg");
 
                 // Bildpfad festlegen je nach Wahrscheinlichkeit
@@ -95,37 +134,41 @@ document.getElementById('postButton').addEventListener('click', async function()
             chatBox.scrollTop = chatBox.scrollHeight;
         });
 
-        document.getElementById("jsonUploadForm").addEventListener("submit", async function(event) {
-            event.preventDefault(); // Standardformularverhalten verhindern
+document.getElementById("jsonUploadForm").addEventListener("submit", async function(event) {
+    event.preventDefault(); // Standardformularverhalten verhindern
 
-            const formData = new FormData();
-            const jsonFile = document.getElementById("jsonFile").files[0];
+    const formData = new FormData();
+    const jsonFile = document.getElementById("jsonFile").files[0];
 
-            if (!jsonFile) {
-                alert("Bitte eine JSON-Datei auswählen.");
-                return;
-            }
+    if (!jsonFile) {
+        alert("Bitte eine JSON-Datei auswählen.");
+        return;
+    }
 
-            formData.append("jsonFile", jsonFile);
+    formData.append("jsonFile", jsonFile);
 
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-            try {
-                const response = await fetch("/upload_json/", {
-                    method: "POST",
-                    headers: {
-                        "X-CSRFToken": csrfToken // CSRF-Token für Sicherheit
-                    },
-                    body: formData
-                });
-
-                const result = await response.json();
-                document.getElementById("uploadMessage").innerText = result.message;
-            } catch (error) {
-                console.error("Fehler beim Hochladen:", error);
-                document.getElementById("uploadMessage").innerText = "Fehler beim Hochladen!";
-            }
+    try {
+        const response = await fetch("/upload_json/", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": csrfToken
+            },
+            body: formData
         });
-        document.getElementById("reloadButton").addEventListener("click", () => {
-            location.reload();
-        });
+
+        const result = await response.json();
+        document.getElementById("uploadStatus").innerText = result.message;
+
+        // Wenn Upload erfolgreich (du kannst hier auch auf result.success prüfen, falls vorhanden)
+        if (response.ok) {
+            setTimeout(() => {
+                location.reload();
+            }); // kurze Verzögerung, damit Nachricht sichtbar bleibt
+        }
+    } catch (error) {
+        console.error("Fehler beim Hochladen:", error);
+        document.getElementById("uploadStatus").innerText = "Fehler beim Hochladen!";
+    }
+});
