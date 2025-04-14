@@ -1,16 +1,14 @@
 # Delab Chatbot
 
-## Vorbereitungen
-In delab_chatbot/download/utils.py wird das Package delab-socialmedia importiert.
-Dieses lässt sich nicht regulär importieren, daher muss das github repository (https://github.com/juliandehne/delab-socialmedia) gecloned werden
-und ein sys Pfad zum directory erstellt werden (nach dem Vorbil in Zeile 8).
+## Starting the website
+Got to the django_chatbot/ (NOT django_chatbot/django_chatbot) folder and run 
+"python3 manage.py runserver" to start the 
+website. Then, got to http://localhost.8000/ to start the website or click on the 
+link in your console. You will see an Upload box where you can upload your data. 
+The data will need to be in json format and have the following keys:
 
-Zum Ordner secret/ müssen die Dateien mostodon_secret.yaml und reddit_secret.yaml
-hinzugefügt werden, die die Zugangsdaten zu den jeweiligen Bot-Applications enthalten. 
-Alternativ könne die Zugangsdataen auch in das Skript download/utils an den 
-entsprechenden Stellen eingefügt werden.
+post_id; author_id; text
 
-## Webseite starten
-Um die Webseite zu starten, muss in den Ordner djange_chatbot gewechselt werden und 
-der "python3 manage.py runserver" aufgerufen werden.
+For requirements see requirements.txt
+
 

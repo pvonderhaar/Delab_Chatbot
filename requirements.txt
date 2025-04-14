@@ -1,4 +1,3 @@
 django
 delab-trees
-delab-socialmedia
 pandas
